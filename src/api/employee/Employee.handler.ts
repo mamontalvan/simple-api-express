@@ -1,0 +1,49 @@
+import { Request, Response, NextFunction } from "express";
+import { Employee } from "./Employee.model";
+import { EmployeeDataAccess } from "./EmployeeDataAccess";
+import { injectDependency } from "../../shared/Container";
+
+const dataAccess = new EmployeeDataAccess();
+injectDependency('EmployeeDataAccess', dataAccess);
+
+export async function getAll(req: Request, res: Response<Employee[]>, next: NextFunction) {
+    try {
+        //const allEmployees = [{ name: 'Empl1' }];
+        const allEmployees: Employee[] = await dataAccess.getAllEmployees();
+        res.json(allEmployees);
+
+    } catch (error) {
+        next(error);
+    }
+}
+
+export async function getById(req: Request<{id: string}>, res: Response<Employee | string>, next: NextFunction) {
+    try {
+        const id = req.params.id;
+        //const response = [{ name: `Empl1 with id: ${id}` }];
+        const employee = await dataAccess.getEmployeeById(id);
+        if (employee) {
+            res.status(200).json(employee);
+        }else{
+             res.status(400).send(`Employee with id ${id} not found`);
+        }
+    } catch (error) {
+        next(error);
+    }
+}
+
+type ObjectWithId = { id: string };
+
+export async function addEmployee(req: Request<{}, ObjectWithId, Employee>, res: Response<ObjectWithId>, next: NextFunction) {
+    try {
+        const employee = await dataAccess.addEmployee(req.body);
+        //const response = [{ name: `Empl1 with id: ${id}` }];
+        //const response = undefined;
+        res.json({
+            id: employee
+        });
+
+    } catch (error) {
+        next(error);
+    }
+}

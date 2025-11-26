@@ -1,0 +1,21 @@
+@url = http://localhost:3000
+
+GET {{url}}/employees
+###
+
+GET {{url}}/employees/043605d8d3e6189e1adb
+###
+
+POST {{url}}/employees/
+Content-Type: application/json
+
+{
+    "name": "Mishell",
+    "position": "HR",
+    "salary": 50000
+
+}
+###
+
+GET {{url}}/reports/salaries
+###
